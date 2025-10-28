@@ -1,0 +1,7 @@
+{
+  "name": "Copy of Controle de Gastos",
+  "description": "Um aplicativo para smartphones onde o usuário consegue registrar todos os gastos. Os dados são organizados automaticamente em uma planilha para fácil visualização.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}

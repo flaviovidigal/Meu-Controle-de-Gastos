@@ -1,0 +1,31 @@
+{
+  "short_name": "Gastos",
+  "name": "Controle de Gastos",
+  "description": "Um aplicativo para smartphones onde o usuário consegue registrar todos os gastos. Os dados são organizados automaticamente em uma planilha para fácil visualização.",
+  "id": "./",
+  "scope": "./",
+  "icons": [
+    {
+      "src": "./app-icon.svg",
+      "type": "image/svg+xml",
+      "sizes": "any",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./icon-192x192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./icon-512x512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": "./",
+  "display": "standalone",
+  "theme_color": "#4F46E5",
+  "background_color": "#111827"
+}
