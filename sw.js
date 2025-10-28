@@ -1,7 +1,7 @@
 // Adiciona a biblioteca Babel para transpilação no Service Worker
 importScripts('https://unpkg.com/@babel/standalone/babel.min.js');
 
-const CACHE_NAME = 'gastos-controle-v6'; // Versão do cache incrementada para forçar a atualização
+const CACHE_NAME = 'gastos-controle-v7'; // Versão do cache incrementada para forçar a atualização
 const BABEL_URL = 'https://unpkg.com/@babel/standalone/babel.min.js';
 const APP_SHELL_URLS = [
   './',

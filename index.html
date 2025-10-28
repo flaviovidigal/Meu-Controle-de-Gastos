@@ -28,6 +28,31 @@
 </head>
   <body class="bg-gray-100 dark:bg-gray-900">
     <div id="root"></div>
+    
+    <script>
+      if ('serviceWorker' in navigator) {
+        let isRefreshing = false;
+        
+        // Quando um novo SW assume o controle, recarrega a página.
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+          if (isRefreshing) return;
+          isRefreshing = true;
+          window.location.reload();
+        });
+        
+        // Registra o Service Worker.
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('./sw.js')
+            .then(registration => {
+              console.log('SW registrado com escopo: ', registration.scope);
+            })
+            .catch(registrationError => {
+              console.log('Falha no registro do SW: ', registrationError);
+            });
+        });
+      }
+    </script>
+
     <script type="module" src="index.tsx"></script>
   </body>
 </html>
