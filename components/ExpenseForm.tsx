@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Expense } from '../types';
-import { CurrencyIcon, TagIcon, PlusIcon, CalendarIcon, CategoryIcon, PencilIcon } from './Icons';
+import { Expense } from '../types.ts';
+import { CurrencyIcon, TagIcon, PlusIcon, CalendarIcon, CategoryIcon, PencilIcon } from './Icons.tsx';
 
 interface ExpenseFormProps {
   onAddExpense: (expense: Omit<Expense, 'id' | 'location'>) => void;

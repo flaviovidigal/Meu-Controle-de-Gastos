@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { CloseIcon, PlusIcon, TrashIcon } from './Icons';
+import { CloseIcon, PlusIcon, TrashIcon } from './Icons.tsx';
 
 interface CategoryManagerProps {
     categories: string[];

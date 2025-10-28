@@ -1,6 +1,6 @@
 import React from 'react';
-import { Expense } from '../types';
-import { TrashIcon, EditIcon } from './Icons';
+import { Expense } from '../types.ts';
+import { TrashIcon, EditIcon } from './Icons.tsx';
 
 interface ExpenseTableProps {
   expenses: Expense[];

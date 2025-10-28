@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { Expense } from './types';
-import { ExpenseForm } from './components/ExpenseForm';
-import { ExpenseTable } from './components/ExpenseTable';
-import { CategoryManager } from './components/CategoryManager';
-import { ConfirmationModal } from './components/ConfirmationModal';
-import { DownloadIcon, SunIcon, MoonIcon, SystemIcon } from './components/Icons';
+import { Expense } from './types.ts';
+import { ExpenseForm } from './components/ExpenseForm.tsx';
+import { ExpenseTable } from './components/ExpenseTable.tsx';
+import { CategoryManager } from './components/CategoryManager.tsx';
+import { ConfirmationModal } from './components/ConfirmationModal.tsx';
+import { DownloadIcon, SunIcon, MoonIcon, SystemIcon } from './components/Icons.tsx';
 
 const DEFAULT_CATEGORIES = ['Alimentação', 'Transporte', 'Moradia', 'Lazer', 'Saúde', 'Outros'];
 

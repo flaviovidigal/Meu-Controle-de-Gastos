@@ -1,4 +1,4 @@
-const CACHE_NAME = 'gastos-controle-v8';
+const CACHE_NAME = 'gastos-controle-v9'; // Versão incrementada para forçar a atualização
 const APP_SHELL_URLS = [
   './',
   './index.html',
@@ -10,7 +10,6 @@ const APP_SHELL_URLS = [
   './components/ExpenseForm.tsx',
   './components/ExpenseTable.tsx',
   './components/Icons.tsx',
-  './components/InfoModal.tsx',
   './app-icon.svg',
   './icon-192x192.png',
   './icon-512x512.png',
@@ -27,6 +26,8 @@ self.addEventListener('install', (event) => {
     caches.open(CACHE_NAME)
       .then((cache) => {
         console.log('Cache aberto, salvando App Shell.');
+        // skipWaiting() força o novo service worker a se ativar imediatamente.
+        self.skipWaiting();
         return Promise.all(
           APP_SHELL_URLS.map(url => {
             return cache.add(url).catch(err => {
