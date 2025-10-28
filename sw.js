@@ -1,4 +1,8 @@
-const CACHE_NAME = 'gastos-controle-v5'; // Versão do cache incrementada
+// Adiciona a biblioteca Babel para transpilação no Service Worker
+importScripts('https://unpkg.com/@babel/standalone/babel.min.js');
+
+const CACHE_NAME = 'gastos-controle-v6'; // Versão do cache incrementada para forçar a atualização
+const BABEL_URL = 'https://unpkg.com/@babel/standalone/babel.min.js';
 const APP_SHELL_URLS = [
   './',
   './index.html',
@@ -6,23 +10,24 @@ const APP_SHELL_URLS = [
   './icon-192x192.png',
   './icon-512x512.png',
   './manifest.json',
+  BABEL_URL, // Adiciona o Babel ao cache do App Shell
 ];
 
-// Evento de instalação: focado em cachear o App Shell de forma segura.
+// Evento de instalação: cacheia o App Shell e o Babel.
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
-        console.log('Cache aberto, salvando App Shell essencial.');
+        console.log('Cache aberto, salvando App Shell e Babel.');
         return cache.addAll(APP_SHELL_URLS);
       })
       .catch(err => {
-          console.error('Falha ao pré-cachear o App Shell:', err);
+          console.error('Falha ao pré-cachear:', err);
       })
   );
 });
 
-// Evento de ativação: limpa caches antigos para evitar conflitos.
+// Evento de ativação: limpa caches antigos.
 self.addEventListener('activate', (event) => {
   const cacheWhitelist = [CACHE_NAME];
   event.waitUntil(
@@ -39,36 +44,69 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Evento de busca: Estratégia "Network falling back to cache".
-// Isso garante que o usuário receba o conteúdo mais recente se estiver online,
-// mas ainda possa usar o aplicativo offline.
+// Função auxiliar para buscar e transpilar código TSX/TS.
+async function fetchAndTranspile(request) {
+  const response = await fetch(request);
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+  const code = await response.text();
+  
+  // Usa o Babel (disponível globalmente via importScripts) para transformar o código.
+  const transformedCode = Babel.transform(code, {
+    presets: ['react', 'typescript'],
+    filename: request.url // Importante para mensagens de erro e source maps
+  }).code;
+  
+  // Retorna uma nova resposta com o código JavaScript e o Content-Type correto.
+  return new Response(transformedCode, {
+    headers: { 'Content-Type': 'application/javascript' }
+  });
+}
+
+// Evento de busca: intercepta requisições para transpilar ou servir do cache.
 self.addEventListener('fetch', (event) => {
-  // Ignora requisições que não são GET para evitar cache de POSTs, etc.
   if (event.request.method !== 'GET') {
     return;
   }
+  
+  const url = new URL(event.request.url);
 
-  event.respondWith(
-    fetch(event.request)
-      .then((networkResponse) => {
-        // Se a resposta da rede for válida, clona, armazena em cache e a retorna.
-        if (networkResponse && networkResponse.ok) {
-          const responseToCache = networkResponse.clone();
-          caches.open(CACHE_NAME)
-            .then(cache => {
-              // Armazena a nova resposta para a requisição, atualizando o cache.
-              cache.put(event.request, responseToCache);
-            });
-        }
+  // Se for um arquivo TSX ou TS, usa a estratégia de transpilação.
+  if (/\.tsx?$/.test(url.pathname)) {
+    event.respondWith(
+      fetchAndTranspile(event.request)
+      .then(networkResponse => {
+        // Armazena a resposta transpilada no cache.
+        const responseToCache = networkResponse.clone();
+        caches.open(CACHE_NAME).then(cache => {
+          cache.put(event.request, responseToCache);
+        });
         return networkResponse;
       })
-      .catch(() => {
-        // Se a rede falhar (offline), tenta encontrar a resposta no cache.
-        return caches.match(event.request)
-          .then((cachedResponse) => {
-            // Retorna a resposta do cache, se existir.
-            return cachedResponse;
-          });
+      .catch(error => {
+        console.error('Falha no fetch/transpilação:', error);
+        // Se a rede ou a transpilação falhar, tenta servir a versão do cache.
+        return caches.match(event.request);
       })
-  );
+    );
+  } else {
+    // Para outros arquivos, usa a estratégia padrão de "Network falling back to cache".
+    event.respondWith(
+      fetch(event.request)
+        .then((networkResponse) => {
+          if (networkResponse && networkResponse.ok) {
+            const responseToCache = networkResponse.clone();
+            caches.open(CACHE_NAME)
+              .then(cache => {
+                cache.put(event.request, responseToCache);
+              });
+          }
+          return networkResponse;
+        })
+        .catch(() => {
+          return caches.match(event.request);
+        })
+    );
+  }
 });
